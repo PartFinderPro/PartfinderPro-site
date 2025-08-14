@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  <meta name="description" content="{meta_description}">
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{meta_description}">
+  <meta property="og:type" content="article">
+  {head_common}
+  <script type="application/ld+json">{json_ld}</script>
+</head>
+<body>
+  <div class="headerbar">
+    <header class="container">
+      <a href="{root}index.html" class="brand">{site_name}</a>
+    </header>
+  </div>
+
+  <main class="container card">
+    <nav class="breadcrumbs">
+      <a href="{root}index.html">Home</a> › <a href="{root}makes/{make_slug}.html">{make}</a> › <a href="{root}problems/{problem_slug}.html">{problem}</a>
+    </nav>
+
+    <h1>{h1}</h1>
+    <p class="meta">Vehicle: <strong>{year} {make} {model}</strong> • Problem: <strong>{problem}</strong></p>
+
+    <img src="{og_image}" alt="Guide image" class="og" loading="lazy">
+
+    <section class="grid">
+      <div class="col">
+        <h2>Likely Causes ranked</h2>
+        <ol>
+          {causes_html}
+        </ol>
+
+        <h2>Quick Diagnostic Flow</h2>
+        <ol>
+          {diagnostic_html}
+        </ol>
+
+        <h2>Recommended Parts and Tools</h2>
+        <ul>
+          {parts_html}
+        </ul>
+
+        <div class="cta-wrap">
+          <a class="btn" href="{mechanic_cta_url}" target="_blank" rel="nofollow noopener">Get a Mechanic Quote</a>
+        </div>
+
+        <h2>Step-by-Step Fix DIY</h2>
+        <ol>
+          {fix_html}
+        </ol>
+
+        <h2>Copy a ready-to-post answer</h2>
+        <div class="card soft">
+          <label>Channel</label>
+          <select id="channel" class="select">
+            <option value="reddit">Reddit</option>
+            <option value="quora">Quora</option>
+            <option value="fb">Facebook</option>
+            <option value="yt">YouTube</option>
+          </select>
+          <button class="btn" id="copyBtn" style="margin-left:10px;">Copy</button>
+          <textarea id="snippet" class="snippet" readonly></textarea>
+          <p class="meta">Tip: paste as a helpful answer, not an ad. Add one personal line before the snippet.</p>
+        </div>
+      </div>
+      <aside class="col">
+        <div class="card soft">
+          <h3>Other common issues on {year} {make} {model}</h3>
+          <ul class="bullets">
+            {related_html}
+          </ul>
+        </div>
+        <div class="card soft">
+          <h3>Share</h3>
+          <div class="share">
+            <a href="https://twitter.com/intent/tweet?url={share_url_enc}&text={share_text}" target="_blank" rel="noopener">Twitter</a>
+            <a href="https://wa.me/?text={share_text}%20{share_url_enc}" target="_blank" rel="noopener">WhatsApp</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={share_url_enc}" target="_blank" rel="noopener">Facebook</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="container foot">
+    <p>© {site_name}. Not affiliated with manufacturers. This site uses affiliate links.</p>
+    <p><a href="{root}index.html">Home</a> • <a href="{root}sitemap.xml">Sitemap</a> • <a href="mailto:{contact_email}">Contact</a></p>
+  </footer>
+
+  <script>
+    const baseShareUrl = "{share_url}";
+    const pageTitle = "{title}";
+    const vehicle = "{year} {make} {model}";
+    const problem = "{problem}";
+    const causes = {causes_js};
+    const parts = {parts_js};
+
+    function buildSnippet(channel) {{
+      const url = baseShareUrl + (baseShareUrl.includes('?') ? '&' : '?') + 'src=' + channel + '&utm_medium=' + channel + '&utm_campaign=' + encodeURIComponent(vehicle.replaceAll(' ','-')) + '-' + encodeURIComponent(problem.replaceAll(' ','-'));
+      const lines = [];
+      lines.push(`If your ${vehicle} has "${problem}", here’s the quick breakdown:`);
+      lines.push(`Likely causes: ${causes.slice(0,3).join('; ')}.`);
+      if (parts.length) {{
+        const p = parts[0];
+        lines.push(`Parts and tools: ${p.label} here → ${p.amazon || p.ebay || p.carparts}`);
+      }}
+      lines.push(`Full DIY steps with links: ${url}`);
+      lines.push(`Use safety gear. If it’s over your head, get a shop quote first.`);
+      return lines.join('\n');
+    }}
+
+    function initSnippet() {{
+      const ch = document.getElementById('channel');
+      const box = document.getElementById('snippet');
+      const set = () => box.value = buildSnippet(ch.value);
+      ch.addEventListener('change', set);
+      set();
+      document.getElementById('copyBtn').addEventListener('click', async () => {{
+        box.select();
+        try {{ await navigator.clipboard.writeText(box.value); }} catch(e){{}}
+      }});
+    }}
+    initSnippet();
+  </script>
+</body>
+</html>

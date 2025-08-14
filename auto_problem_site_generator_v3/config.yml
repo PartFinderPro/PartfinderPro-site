@@ -1,0 +1,16 @@
+site_name: Instant Auto Fix
+site_description: Fast DIY car problem guides with parts links and quick fixes.
+site_baseurl: 'https://github.com/PartFinderPro/PartfinderPro-site.git'
+public_base_url: 'https://github.com/PartFinderPro/PartfinderPro-site.git'
+brand_color: '#0f172a'
+accent_color: '#22c55e'
+amazon_tag: partfinderp04-20
+ebay_cid: YOUR_EBAY_CAMPAIGN_ID
+carparts_pid: YOUR_CARPARTS_PID
+mechanic_cta_url: https://www.repairpal.com/estimator
+contact_email: shop.fx27@gmail.com
+analytics_google_tag: 'G-J3Y3YPEF8D'
+analytics_cloudflare_token: ''
+enable_bitly: true
+bitly_domain: bit.ly
+bitly_token: ''
