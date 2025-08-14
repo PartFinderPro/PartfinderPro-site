@@ -1,6 +1,6 @@
 site_name: Instant Auto Fix
 site_description: Fast DIY car problem guides with parts links and quick fixes.
-site_baseurl: 'https://github.com/PartFinderPro/PartfinderPro-site.git'
+site_baseurl: 'https://partfinderpro.github.io/PartfinderPro-site/'
 public_base_url: 'https://partfinderpro.github.io/PartfinderPro-site/'
 brand_color: '#0f172a'
 accent_color: '#22c55e'
