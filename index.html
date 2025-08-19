@@ -1,21 +1,64 @@
-<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>Instant Auto Fix</title><link rel='stylesheet' href='assets/style.css'>
-<div class='headerbar'><div class='container'><a class='brand' href='./index.html'>Instant Auto Fix</a></div></div>
-<main class='container card'>
-<h1>Find Your Fix Fast</h1>
-<input id='q' placeholder="e.g., 2016 Ford F-150 won't start" style='width:100%;padding:12px;border-radius:10px;border:1px solid #e5e7eb;margin:12px 0;'>
-<div id='results'></div>
-<h2>Browse by Make</h2><div id='makes'></div>
-<h2>Browse by Problem</h2><div id='problems'></div>
-</main>
-<footer class='container'><p class='meta'>© Instant Auto Fix · <a href='./sitemap.xml'>Sitemap</a></p></footer>
-<script>
-fetch('./sitemap.json').then(r=>r.json()).then(data=>{
- const q=document.getElementById('q'),res=document.getElementById('results');
- function render(items){res.innerHTML=items.slice(0,60).map(i=>`<div class=card><a href='${i.url}'><h3>${i.title}</h3></a><div class=meta>${i.meta}</div></div>`).join('')}
- render(data); q.oninput=()=>{const s=q.value.toLowerCase(); render(data.filter(x=>(x.title+' '+x.meta).toLowerCase().includes(s)));};
- const byMake={}, byProblem={}; data.forEach(d=>{(byMake[d.make]=byMake[d.make]||[]).push(d); (byProblem[d.problem]=byProblem[d.problem]||[]).push(d);});
- document.getElementById('makes').innerHTML=Object.keys(byMake).sort().map(m=>`<a class=badge href="./makes/${m.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.html">${m}</a>`).join(' ');
- document.getElementById('problems').innerHTML=Object.keys(byProblem).sort().map(p=>`<a class=badge href="./problems/${p.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.html">${p}</a>`).join(' ');
-});
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instant Auto Fix — Find Your Fix Fast</title>
+  <meta name="description" content="Search year/make/model symptoms and get instant DIY guides with parts picks.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="headerbar"><div class="container"><a href="./index.html" class="brand">Instant Auto Fix</a></div></div>
+  <main class="container card">
+    <h1>Find Your Fix Fast</h1>
+    <input id="q" class="search" placeholder="e.g., 2016 Ford F-150 won't start">
+    <div id="results" aria-live="polite"></div>
+    <p class="disclosure">Disclosure: As an Amazon Associate and eBay Partner, we may earn from qualifying purchases. Your price stays the same.</p>
+  </main>
+  <footer class="container">
+    <p class="small">© Instant Auto Fix • <a href="./sitemap.xml">Sitemap</a></p>
+  </footer>
+  <script>
+    const AMAZON_TAG = "partfinderp04-20";
+    const EBAY_CAMPID = "5339119337";
+    const toAmazon = (q) => "https://www.amazon.com/s?k=" + encodeURIComponent(q) + "&tag=" + AMAZON_TAG;
+    const toEbay = (q) => "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(q) + "&campid=" + EBAY_CAMPID;
+
+    function card(item){
+      const q = item.meta || item.title;
+      const amz = toAmazon(q);
+      const ebay = toEbay(q);
+      return `
+        <div class="card">
+          <div class="row">
+            <div>
+              <a href="${item.url}"><h3>${item.title}</h3></a>
+              <div class="meta">${item.meta}</div>
+            </div>
+            <div class="row">
+              <a class="btn btn-amz" rel="nofollow noopener" target="_blank" href="${amz}">Amazon</a>
+              <a class="btn btn-ebay" rel="nofollow noopener" target="_blank" href="${ebay}">eBay</a>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function load(){
+      try {
+        const res = await fetch('./sitemap.json');
+        const data = await res.json();
+        const q = document.getElementById('q');
+        const results = document.getElementById('results');
+        const render = (items) => results.innerHTML = items.slice(0,80).map(card).join('');
+        render(data);
+        q.addEventListener('input', () => {
+          const s = q.value.toLowerCase();
+          render(data.filter(x => (x.title + " " + x.meta).toLowerCase().includes(s)));
+        });
+      } catch(e) {
+        document.getElementById('results').innerHTML = "<p>Could not load results. Make sure sitemap.json exists.</p>";
+      }
+    }
+    load();
+  </script>
+</body>
+</html>
