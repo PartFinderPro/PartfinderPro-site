@@ -10,7 +10,7 @@
   <div class="headerbar"><div class="container"><a href="./index.html" class="brand">Instant Auto Fix</a></div></div>
   <main class="container card">
     <h1>Find Your Fix Fast</h1>
-    <input id="q" class="search" placeholder="e.g., 2016 Ford F-150 won't start">
+    <input id="q" class="search" placeholder="e.g., 2016 Ford F-150 won't start" style="width:100%;padding:12px;border-radius:10px;border:1px solid #e5e7eb;margin:12px 0;">
     <div id="results" aria-live="polite"></div>
     <p class="disclosure">Disclosure: As an Amazon Associate and eBay Partner, we may earn from qualifying purchases. Your price stays the same.</p>
   </main>
@@ -23,18 +23,26 @@
     const toAmazon = (q) => "https://www.amazon.com/s?k=" + encodeURIComponent(q) + "&tag=" + AMAZON_TAG;
     const toEbay = (q) => "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(q) + "&campid=" + EBAY_CAMPID;
 
+    // Normalize URL for GitHub project pages (repo mounted at /<user>.github.io/<repo>/)
+    function fixUrl(u){
+      if(!u) return "#";
+      if(u.startsWith("/")) return "." + u;  // turn /fixes/abc.html into ./fixes/abc.html
+      return u;
+    }
+
     function card(item){
       const q = item.meta || item.title;
       const amz = toAmazon(q);
       const ebay = toEbay(q);
+      const url = fixUrl(item.url);
       return `
         <div class="card">
-          <div class="row">
+          <div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
-              <a href="${item.url}"><h3>${item.title}</h3></a>
+              <a href="${url}"><h3>${item.title}</h3></a>
               <div class="meta">${item.meta}</div>
             </div>
-            <div class="row">
+            <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
               <a class="btn btn-amz" rel="nofollow noopener" target="_blank" href="${amz}">Amazon</a>
               <a class="btn btn-ebay" rel="nofollow noopener" target="_blank" href="${ebay}">eBay</a>
             </div>
