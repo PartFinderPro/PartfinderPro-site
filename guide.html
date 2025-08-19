@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instant Auto Fix — Guide</title>
+  <meta name="description" content="Quick DIY car fix guide with parts picks.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="headerbar"><div class="container"><a href="./index.html" class="brand">Instant Auto Fix</a></div></div>
+  <main class="container card" id="content">
+    <h1>Loading…</h1>
+  </main>
+  <script>
+    const AMAZON_TAG = "partfinderp04-20";
+    const EBAY_CAMPID = "5339119337";
+    const toAmazon = (q) => "https://www.amazon.com/s?k=" + encodeURIComponent(q) + "&tag=" + AMAZON_TAG;
+    const toEbay = (q) => "https://www.ebay.com/sch/i.html?_nkw=" + encodeURIComponent(q) + "&campid=" + EBAY_CAMPID;
+
+    const params = new URLSearchParams(location.search);
+    const title = params.get('title') || 'DIY Guide';
+    const meta = params.get('meta') || '';
+
+    function guessParts(meta){
+      const m = meta.toLowerCase();
+      const picks = [];
+      if(m.includes("won't start") || m.includes("wont start")) picks.push("Replacement battery","Starter motor","OBD2 scanner");
+      if(m.includes("alternator")) picks.push("Alternator (reman/new)","Serpentine belt","Digital multimeter");
+      if(m.includes("p0420")) picks.push("Upstream O2 sensor","Catalytic converter","Exhaust gasket");
+      if(m.includes("p0442") || m.includes("evap")) picks.push("Gas cap (OEM)","EVAP hose","Purge valve");
+      if(picks.length===0) picks.push("OBD2 scanner","Relevant sensor","Basic hand tools");
+      return Array.from(new Set(picks)).slice(0,3);
+    }
+
+    function section(items){ return "<ol>" + items.map(i=>"<li>"+i+"</li>").join("") + "</ol>"; }
+
+    const parts = guessParts(meta);
+    const qs = meta || title;
+    const partBtns = parts.map(p=>{
+      const query = qs + " " + p;
+      return `<div class="row">
+        <a class="btn btn-amz" rel="nofollow noopener" target="_blank" href="${toAmazon(query)}">Buy ${p} (Amazon)</a>
+        <a class="btn btn-ebay" rel="nofollow noopener" target="_blank" href="${toEbay(query)}">eBay</a>
+      </div>`;
+    }).join("");
+
+    const causes = ["Battery/charging issue","Corroded/loose connectors","Failed component","Sensor out-of-range","ECU code present"];
+    const diag = ["Scan for OBD-II codes and note freeze-frame data","Check fuses/relays for the affected circuit","Voltage/continuity tests at connectors/grounds","Inspect for leaks or mechanical wear","Decide DIY vs shop based on time and tools"];
+    const fix = ["Identify the failed part from diagnostics","Replace with OEM-spec part","Clear codes and perform drive cycle","Road test to verify fix"];
+
+    document.getElementById('content').innerHTML = `
+      <h1>${title}</h1>
+      <p class="meta">${meta}</p>
+      <h2>Likely Causes</h2>${section(causes)}
+      <h2>Quick Parts Picks</h2>${partBtns}
+      <h2>Diagnostic</h2>${section(diag)}
+      <h2>DIY Steps</h2>${section(fix)}
+    `;
+  </script>
+</body>
+</html>
